@@ -37,7 +37,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
             buttons: [
               {
                 action: 'link',
-                label: 'Subscribe to cmplx',
+                label: 'Visit cmplx on Alfafrens',
                 target:
                   'https://www.alfafrens.com/channel/0x8a2e9ee84aaaa7f542accb937130fffab4762668',
               },
@@ -72,16 +72,13 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       getFrameHtmlResponse({
         buttons: [
           {
-            label: 'State: 0',
-          },
-          {
             action: 'link',
-            label: 'OnchainKit',
-            target: 'https://onchainkit.xyz',
+            label: 'Subscribe to cmplx',
+            target: 'https://www.alfafrens.com/channel/0x8a2e9ee84aaaa7f542accb937130fffab4762668',
           },
         ],
         image: {
-          src: `${NEXT_PUBLIC_URL}/park-1.png`,
+          src: `${NEXT_PUBLIC_URL}/not_verified.png`,
         },
         postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
       }),
