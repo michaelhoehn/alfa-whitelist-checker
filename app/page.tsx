@@ -5,31 +5,27 @@ import { NEXT_PUBLIC_URL } from './config';
 const frameMetadata = getFrameMetadata({
   buttons: [
     {
-      label: 'Story time',
+      label: 'Check airdrop status',
     },
     {
-      action: 'tx',
-      label: 'Send Base Sepolia',
-      target: `${NEXT_PUBLIC_URL}/api/tx`,
-      postUrl: `${NEXT_PUBLIC_URL}/api/tx-success`,
+      action: 'link',
+      label: 'Subscribe to cmplx',
+      target: 'https://www.alfafrens.com/channel/0x8a2e9ee84aaaa7f542accb937130fffab4762668',
     },
   ],
   image: {
-    src: `${NEXT_PUBLIC_URL}/park-3.png`,
+    src: `${NEXT_PUBLIC_URL}/main.png`,
     aspectRatio: '1:1',
-  },
-  input: {
-    text: 'Tell me a story',
   },
   postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
 });
 
 export const metadata: Metadata = {
-  title: 'zizzamia.xyz',
-  description: 'LFG',
+  title: 'cmplx alfafrens',
+  description: "check to see if you're on the list",
   openGraph: {
-    title: 'zizzamia.xyz',
-    description: 'LFG',
+    title: 'cmplx alfafrens',
+    description: "check to see if you're on the list",
     images: [`${NEXT_PUBLIC_URL}/park-1.png`],
   },
   other: {
@@ -40,7 +36,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <>
-      <h1>zizzamia.xyz</h1>
+      <h1>cmplx.eth</h1>
     </>
   );
 }

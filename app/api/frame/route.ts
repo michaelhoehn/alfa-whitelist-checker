@@ -4,58 +4,92 @@ import { NEXT_PUBLIC_URL } from '../../config';
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
   const body: FrameRequest = await req.json();
-  const { isValid, message } = await getFrameMessage(body, { neynarApiKey: 'NEYNAR_ONCHAIN_KIT' });
 
-  if (!isValid) {
-    return new NextResponse('Message not valid', { status: 500 });
-  }
+  // Log the incoming request body
+  // console.log('Request body:', JSON.stringify(body));
 
-  const text = message.input || '';
-  let state = {
-    page: 0,
-  };
   try {
-    state = JSON.parse(decodeURIComponent(message.state?.serialized));
-  } catch (e) {
-    console.error(e);
-  }
+    const { isValid, message } = await getFrameMessage(body, {
+      neynarApiKey: process.env.NEXT_PUBLIC_NEYNAR_API_KEY,
+      // allowFramegear: true, // Enable Framegear for testing
+    });
 
-  /**
-   * Use this code to redirect to a different page
-   */
-  if (message?.button === 3) {
-    return NextResponse.redirect(
-      'https://www.google.com/search?q=cute+dog+pictures&tbm=isch&source=lnms',
-      { status: 302 },
+    // Log the response from getFrameMessage
+    // console.log('Frame message response:', JSON.stringify({ isValid, message }));
+
+    if (!isValid) {
+      return new NextResponse('Message not valid', { status: 500 });
+    }
+
+    const fid = message.interactor.fid;
+    const channelAddress = '0x8a2e9ee84aaaa7f542accb937130fffab4762668';
+
+    if (message?.button === 1) {
+      // Check status button
+      const response = await fetch(
+        `https://alfafrens.com/api/v0/isUserByFidSubscribedToChannel?channelAddress=${channelAddress}&fid=${fid}`,
+      );
+      const data = await response.json();
+
+      if (data.isSubscribed) {
+        return new NextResponse(
+          getFrameHtmlResponse({
+            buttons: [
+              {
+                action: 'link',
+                label: 'Subscribe to cmplx',
+                target:
+                  'https://www.alfafrens.com/channel/0x8a2e9ee84aaaa7f542accb937130fffab4762668',
+              },
+            ],
+            image: {
+              src: `${NEXT_PUBLIC_URL}/verified.png`,
+            },
+            postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
+          }),
+        );
+      } else {
+        return new NextResponse(
+          getFrameHtmlResponse({
+            buttons: [
+              {
+                action: 'link',
+                label: 'Subscribe to cmplx',
+                target:
+                  'https://www.alfafrens.com/channel/0x8a2e9ee84aaaa7f542accb937130fffab4762668',
+              },
+            ],
+            image: {
+              src: `${NEXT_PUBLIC_URL}/not_verified.png`,
+            },
+            postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
+          }),
+        );
+      }
+    }
+
+    return new NextResponse(
+      getFrameHtmlResponse({
+        buttons: [
+          {
+            label: 'State: 0',
+          },
+          {
+            action: 'link',
+            label: 'OnchainKit',
+            target: 'https://onchainkit.xyz',
+          },
+        ],
+        image: {
+          src: `${NEXT_PUBLIC_URL}/park-1.png`,
+        },
+        postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
+      }),
     );
+  } catch (error) {
+    console.error('Error processing request:', error);
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
-
-  return new NextResponse(
-    getFrameHtmlResponse({
-      buttons: [
-        {
-          label: `State: ${state?.page || 0}`,
-        },
-        {
-          action: 'link',
-          label: 'OnchainKit',
-          target: 'https://onchainkit.xyz',
-        },
-        {
-          action: 'post_redirect',
-          label: 'Dog pictures',
-        },
-      ],
-      image: {
-        src: `${NEXT_PUBLIC_URL}/park-1.png`,
-      },
-      postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
-      state: {
-        page: state?.page + 1,
-        time: new Date().toISOString(),
-      },
-    }),
-  );
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
